@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureChat</title>
+</head>
+<body>
+    <h1>SecureChat</h1>
+    <input type="text" id="messageInput" placeholder="Type a message">
+    <button onclick="sendMessage()">Send</button>
+    <div id="chat"></div>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:5000");
+
+        ws.onopen = () => console.log("Connected to server");
+        ws.onmessage = (event) => {
+            document.getElementById("chat").innerHTML += `<p>${event.data}</p>`;
+        };
+        ws.onclose = () => console.log("Disconnected");
+
+        function sendMessage() {
+            const message = document.getElementById("messageInput").value;
+            ws.send(message);
+        }
+    </script>
+</body>
+</html>
