@@ -12,9 +12,9 @@
     <div id="chat"></div>
 
     <script>
-        const ws = new WebSocket("ws://localhost:5000");
+        const ws = new WebSocket("wss://localhost:5000");
 
-        ws.onopen = () => console.log("Connected to server");
+        ws.onopen = () => console.log("Connected to server securely");
         ws.onmessage = (event) => {
             document.getElementById("chat").innerHTML += `<p>${event.data}</p>`;
         };
