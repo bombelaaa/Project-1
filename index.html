@@ -12,18 +12,50 @@
     <div id="chat"></div>
 
     <script>
-        const ws = new WebSocket("wss://localhost:5000");
+        let ws;
+        let reconnectInterval = 2000;
 
-        ws.onopen = () => console.log("Connected to server securely");
-        ws.onmessage = (event) => {
-            document.getElementById("chat").innerHTML += `<p>${event.data}</p>`;
-        };
-        ws.onclose = () => console.log("Disconnected");
+        function connectWebSocket() {
+            const token = prompt("Enter your password:");
+            ws = new WebSocket(`wss://localhost:5000?token=${token}`);
 
+            ws.onopen = () => {
+                console.log("Connected securely");
+                startHeartbeat();
+            };
+
+            ws.onmessage = (event) => {
+                console.log("New message:", event.data);
+                document.getElementById("chat").innerHTML += `<p>${event.data}</p>`;
+            };
+
+            ws.onclose = () => {
+                console.log("Disconnected. Reconnecting...");
+                setTimeout(connectWebSocket, reconnectInterval);
+            };
+
+            ws.onerror = (error) => console.error("WebSocket error:", error);
+        }
+
+        function startHeartbeat() {
+            setInterval(() => {
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send("PING"); 
+                }
+            }, 5000);
+        }
         function sendMessage() {
             const message = document.getElementById("messageInput").value;
-            ws.send(message);
+            if(ws.readyState === WebSocket.OPEN) {
+                ws.send(message);
+                console.log("sent message: ", message);
+                document.getElementById("messageInput").value = "";
+            }    else   {
+                console.error("Error Websocket is not open");
+            }
         }
+
+        connectWebSocket(); 
     </script>
 </body>
 </html>
