@@ -24,9 +24,15 @@
                 startHeartbeat();
             };
 
-            ws.onmessage = (event) => {
-                console.log("New message:", event.data);
-                document.getElementById("chat").innerHTML += `<p>${event.data}</p>`;
+            ws.onmessage = async (event) => {
+                if (event.data instanceof Blob) {
+                    const text = await event.data.text(); 
+                    console.log("New message:", text);
+                    document.getElementById("chat").innerHTML += `<p>${text}</p>`;
+                } else {
+                    console.log("New message:", event.data);
+                    document.getElementById("chat").innerHTML += `<p>${event.data}</p>`;
+                }
             };
 
             ws.onclose = () => {

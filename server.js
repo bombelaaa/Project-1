@@ -3,13 +3,11 @@ const https = require('https');
 const WebSocket = require('ws');
 const url = require('url');
 
-// Create HTTPS server with SSL certificate
 const server = https.createServer({
     cert: fs.readFileSync('cert.pem'),
     key: fs.readFileSync('key.pem')
 });
 
-// Create WebSocket server attached to HTTPS server
 const wss = new WebSocket.Server({ server });
 
 const clients = new Map();
@@ -26,23 +24,33 @@ wss.on('connection', (ws, req) => {
     }
 
     console.log(`Authorized access from ${req.socket.remoteAddress}`);
+
     clients.set(ws, { lastMessageTime: 0 });
 
-    ws.on('message', (message) => {
-        if (message === "PING") return; // Ignore heartbeat messages
+    ws.on('message', async (message) => {
+        if (message === "PING") return; 
 
         const now = Date.now();
-        const userData = clients.get(ws);
+        let userData = clients.get(ws);
 
-        if (now - userData.lastMessageTime < 1000) {
-            ws.send("You are sending messages too fast");
+        if (!userData) {
+            userData = { lastMessageTime: 0 };
+            clients.set(ws, userData);
+        }
+
+        if (now - userData.lastMessageTime < 1000) {  
+            ws.send("You are sending messages too quickly. Please wait.");
+            console.log("Rate limit hit: Message blocked");
             return;
         }
 
         userData.lastMessageTime = now;
         console.log(`Received: ${message}`);
 
-        // Broadcast message to all connected clients
+        if (message instanceof Buffer) {
+            message = message.toString(); 
+        }
+
         wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
                 client.send(message);
@@ -56,7 +64,6 @@ wss.on('connection', (ws, req) => {
     });
 });
 
-// Start WebSocket server on port 5000
 server.listen(5000, () => {
     console.log("Secure WebSocket server running on wss://localhost:5000");
 });
