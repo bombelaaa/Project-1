@@ -17,7 +17,8 @@
 
         function connectWebSocket() {
             const token = prompt("Enter your password:");
-            ws = new WebSocket(`wss://localhost:5000?token=${token}`);
+            const serverAddress = prompt("Enter server address:", "wss://localhost:5000");
+            ws = new WebSocket(`${serverAddress}?token=${token}`);
 
             ws.onopen = () => {
                 console.log("Connected securely");

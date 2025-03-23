@@ -1,4 +1,5 @@
 const fs = require('fs');
+const bcrypt = require('bcrypt');
 const https = require('https');
 const WebSocket = require('ws');
 const url = require('url');
@@ -12,11 +13,15 @@ const wss = new WebSocket.Server({ server });
 
 const clients = new Map();
 
-wss.on('connection', (ws, req) => {
+wss.on('connection', async (ws, req) => {
     const params = new URLSearchParams(url.parse(req.url).query);
     const token = params.get('token');
 
-    if (token !== "password123") {
+    const hashedPassword = '$2b$10$EIXIXQp1j1bYFZ1Z5r1O0eQe5Z5r1O0eQe5Z5r1O0eQe5Z5r1O0e'; // Example hash
+
+    const authorized = await bcrypt.compare(token, hashedPassword);
+
+    if (!authorized) {
         console.log(`Unauthorized access attempt from ${req.socket.remoteAddress}`);
         ws.send("Unauthorized access - connection closed.");
         ws.close();
