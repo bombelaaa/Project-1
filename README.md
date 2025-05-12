@@ -129,7 +129,6 @@ npm start
 ## Future Improvements
 
 * Rate limiting & brute-force protection.
-* Emoji reactions, typing indicators.
 * Group chats & channels.
 * Desktop notifications & offline message queue.
 
