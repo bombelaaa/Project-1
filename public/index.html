@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SecureChat</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div id="auth" class="card">
+        <h2>SecureChat</h2>
+        <input id="username" placeholder="Username" />
+        <input id="password" type="password" placeholder="Password" />
+        <div class="buttons">
+          <button id="registerBtn">Register</button>
+          <button id="loginBtn">Log In</button>
+        </div>
+        <p id="authMsg" class="error"></p>
+      </div>
+
+      <div id="chat" class="card" style="display: none">
+        <h2>Welcome, <span id="me"></span></h2>
+        <label for="peerSelect">Chat with:</label>
+        <select id="peerSelect"></select>
+
+        <ul id="messages" class="messages"></ul>
+
+        <div class="input-group">
+          <input id="messageInput" placeholder="Type a message…" />
+          <button id="sendBtn">Send</button>
+        </div>
+
+        <hr />
+
+        <div class="input-group">
+          <input type="file" id="fileInput" />
+          <button id="sendFileBtn">Send File</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://unpkg.com/openpgp@5.5.0/dist/openpgp.min.js"></script>
+    <script src="/script.js"></script>
+  </body>
+</html>
